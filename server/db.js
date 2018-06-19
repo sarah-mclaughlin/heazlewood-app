@@ -61,6 +61,68 @@ function getInsects (conn = connection) {
 //     })
 // }
 
+function addRecommendation (recommendation, conn = connection) {
+  return conn('recommendations')
+    // .join('chemicals', 'recommendations.id', '=', 'chemicals.recommendation_id')
+    // .join('recommendations_weeds', 'recommendations.id', '=', 'recommendations_weeds.recommendation_id')
+    // .join('recommendations_insects', 'recommendations.id', '=', 'recommendations_insects.recommendation_id')
+    .insert({
+      'date': recommendation.date,
+      'grower_name': recommendation.growerName,
+      'crop': recommendation.crop,
+      'crop_stage': recommendation.cropStage,
+      'paddock_name': recommendation.paddockName,
+      'paddock_report': recommendation.paddockReport,
+      'recommendation': recommendation.recommendation,
+      'application_details': recommendation.applicationDetails,
+      'precautions': recommendation.precautions,
+      'fertilizer': recommendation.fertilizer,
+      'livestock': recommendation.livestock,
+      'diseases': recommendation.diseases,
+      'other_weeds': recommendation.otherWeeds
+      // 'recommendations_weeds': recommendation.weeds.forEach(weed => weed.weedName),
+      // 'insects.name as insectsName',
+      // 'chemicals.name': recommendation.chemicalName,
+      // 'chemicals.dosage': recommendation.chemicalDosage
+    })
+}
+
+function addChemicals (id, chemical, conn = connection) {
+  return conn('chemicals')
+    .returning('recommendation_id')
+    .insert({
+      'name': chemical.chemicalName,
+      'dosage': chemical.chemicalDosage,
+      'recommendation_id': id
+    })
+}
+
+function addWeeds (id, weed, conn = connection) {
+  return conn('recommendations_weeds')
+    .returning('recommendation_id')
+    .insert({
+      'weed_id': weed.weedId,
+      'recommendation_id': id
+    })
+}
+
+function addInsects (id, insect, conn = connection) {
+  return conn('recommendations_insects')
+    .insert({
+      'insect_id': insect.insectId,
+      'recommendation_id': id
+    })
+}
+
+// exports.up = (knex, Promise) => {
+//   return knex('users')
+//     .insert({first_name: 'John', last_name: 'Doe'})
+//     .then((res) => {
+//       return knex('groups')
+//         .insert({name: 'Cool Group', user_id: res[0]})
+//     })
+// }
+
 // function deleteChemical (itemId, conn = connection) {
 //   return conn('recommendations_chemicals')
 //     .where('id', '=', itemId)
@@ -70,8 +132,11 @@ function getInsects (conn = connection) {
 module.exports = {
   getRecommendations,
   getWeeds,
-  getInsects
+  getInsects,
   // editRecommendation,
-  // addRecommendation,
+  addRecommendation,
+  addChemicals,
+  addWeeds,
+  addInsects
   // deleteChemical
 }

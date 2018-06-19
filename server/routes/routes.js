@@ -4,7 +4,7 @@ const db = require('../db')
 
 const router = express.Router()
 
-router.use(express.json())
+// router.use(express.json())
 
 router.get('/recommendations', (req, res) => {
   db.getRecommendations()
@@ -34,6 +34,32 @@ router.get('/insects', (req, res) => {
     })
     .catch(err => {
       res.status(500).json({errorMessage: err.message})
+    })
+})
+
+router.post('/add', (req, res) => {
+  const recommendation = req.body
+  db.addRecommendation({recommendation})
+    .then((id) => {
+      recommendation.chemicals.forEach(chemical => {
+        db.addChemicals(id, chemical)
+      })
+    })
+    // .then((id) => {
+    //   recommendation.weeds.forEach(weed => {
+    //     db.addWeeds(id, weed)
+    //   })
+    // })
+    // .then((id) => {
+    //   recommendation.insects.forEach(insect => {
+    //     db.addInsects(id, insect)
+    //   })
+    // })
+    .then(() => {
+      res.sendStatus(200)
+    })
+    .catch(err => {
+      res.status(500).send('DATABASE ERROR: ' + err.message)
     })
 })
 
