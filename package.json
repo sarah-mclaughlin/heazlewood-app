@@ -21,7 +21,9 @@
     ]
   },
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "knex": "^0.14.6",
+    "sqlite3": "^4.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -34,7 +36,7 @@
     "jest": "^22.4.3",
     "jsdom": "^11.8.0",
     "nodemon": "^1.17.3",
-    "react": "^16.3.2",
+    "react": "^16.4.1",
     "react-dom": "^16.3.2",
     "superagent": "^3.8.2",
     "webpack": "3"

@@ -1,0 +1,18 @@
+exports.up = knex => knex.schema.createTable('recommendations', table => {
+  table.increments('id').primary()
+  table.string('date')
+  table.string('grower_name')
+  table.string('crop')
+  table.string('crop_stage')
+  table.string('paddock_name')
+  table.string('paddock_report')
+  table.text('recommendation')
+  table.text('application_details')
+  table.string('precautions')
+  table.string('fertilizer')
+  table.string('livestock')
+  table.string('diseases')
+  table.string('other_weeds')
+})
+
+exports.down = knex => knex.schema.dropTable('recommendations')
