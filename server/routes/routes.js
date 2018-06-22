@@ -40,17 +40,26 @@ router.get('/insects', (req, res) => {
 router.post('/add', (req, res) => {
   const recommendation = req.body
   db.addRecommendation({recommendation})
-    .then((id) => {
+    .then((arr) => {
+      const id = arr[0]
       recommendation.chemicals.forEach(chemical => {
         db.addChemicals(id, chemical)
       })
     })
-    // .then((id) => {
+    // .then(() => {
+    //   db.getRecommendationId({recommendation})
+    // })
+    // .then((arr) => {
+    //   const id = arr[0]
     //   recommendation.weeds.forEach(weed => {
     //     db.addWeeds(id, weed)
     //   })
     // })
-    // .then((id) => {
+    // .then(() => {
+    //   db.getRecommendationId({recommendation})
+    // })
+    // .then((arr) => {
+    //   const id = arr[0]
     //   recommendation.insects.forEach(insect => {
     //     db.addInsects(id, insect)
     //   })

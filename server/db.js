@@ -54,13 +54,6 @@ function getInsects (conn = connection) {
 //     .update({is_complete: true})
 // }
 
-// function addRecommendation (conn = connection) {
-//   return conn('recommendations')
-//     .insert({
-//       is_complete: false
-//     })
-// }
-
 function addRecommendation (recommendation, conn = connection) {
   return conn('recommendations')
     // .join('chemicals', 'recommendations.id', '=', 'chemicals.recommendation_id')
@@ -89,7 +82,6 @@ function addRecommendation (recommendation, conn = connection) {
 
 function addChemicals (id, chemical, conn = connection) {
   return conn('chemicals')
-    .returning('recommendation_id')
     .insert({
       'name': chemical.chemicalName,
       'dosage': chemical.chemicalDosage,
@@ -97,9 +89,16 @@ function addChemicals (id, chemical, conn = connection) {
     })
 }
 
+function getRecommendationId (recommendation, conn = connection) {
+  return conn('recommendations')
+    .where({})
+    .select(
+      'id',
+    )
+}
+
 function addWeeds (id, weed, conn = connection) {
   return conn('recommendations_weeds')
-    .returning('recommendation_id')
     .insert({
       'weed_id': weed.weedId,
       'recommendation_id': id
@@ -135,6 +134,7 @@ module.exports = {
   getInsects,
   // editRecommendation,
   addRecommendation,
+  getRecommendationId,
   addChemicals,
   addWeeds,
   addInsects
