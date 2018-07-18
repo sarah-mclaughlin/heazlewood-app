@@ -37,33 +37,50 @@ router.get('/insects', (req, res) => {
     })
 })
 
+router.get('/recinsects', (req, res) => {
+  db.getRecInsects()
+    .then(insects => {
+      res.json({insects})
+    })
+    .catch(err => {
+      res.status(500).json({errorMessage: err.message})
+    })
+})
+
+router.get('/recweeds', (req, res) => {
+  db.getRecWeeds()
+    .then(weeds => {
+      res.json({weeds})
+    })
+    .catch(err => {
+      res.status(500).json({errorMessage: err.message})
+    })
+})
+
+router.get('/chemicals', (req, res) => {
+  db.getChemicals()
+    .then(chemicals => {
+      res.json({chemicals})
+    })
+    .catch(err => {
+      res.status(500).json({errorMessage: err.message})
+    })
+})
+
+// router.post('/', (req, res) => {
+//   const weed = req.body
+//   db.addWeed(weed)
+//     .then(() => {
+//       res.sendStatus(200)
+//     })
+//     .catch(err => {
+//       res.status(500).send('DATABASE ERROR: ' + err.message)
+//     })
+// })
+
 router.post('/add', (req, res) => {
   const recommendation = req.body
-  db.addRecommendation({recommendation})
-    .then((arr) => {
-      const id = arr[0]
-      recommendation.chemicals.forEach(chemical => {
-        db.addChemicals(id, chemical)
-      })
-    })
-    // .then(() => {
-    //   db.getRecommendationId({recommendation})
-    // })
-    // .then((arr) => {
-    //   const id = arr[0]
-    //   recommendation.weeds.forEach(weed => {
-    //     db.addWeeds(id, weed)
-    //   })
-    // })
-    // .then(() => {
-    //   db.getRecommendationId({recommendation})
-    // })
-    // .then((arr) => {
-    //   const id = arr[0]
-    //   recommendation.insects.forEach(insect => {
-    //     db.addInsects(id, insect)
-    //   })
-    // })
+  db.addRecommendation(recommendation)
     .then(() => {
       res.sendStatus(200)
     })

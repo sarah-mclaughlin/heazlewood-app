@@ -48,6 +48,41 @@ function getInsects (conn = connection) {
     )
 }
 
+function getChemicals (conn = connection) {
+  return conn('chemicals')
+    .select(
+      'id',
+      'name',
+      'dosage',
+      'recommendation_id as recommendationId'
+    )
+}
+
+function getRecWeeds (conn = connection) {
+  return conn('recommendations_weeds')
+    .select(
+      'id',
+      'recommendation_id as recommendationId',
+      'weed_id as weedId'
+    )
+}
+
+function getRecInsects (conn = connection) {
+  return conn('recommendations_insects')
+    .select(
+      'id',
+      'recommendation_id as recommendationId',
+      'insect_id as insectId'
+    )
+}
+
+function addWeed (weed, conn = connection) {
+  return conn('weeds')
+    .insert({
+      'name': weed.name
+    })
+}
+
 // function editRecommendation (recommendationId, conn = connection) {
 //   return conn('recommendations')
 //     .where('id', '=', recommendationId)
@@ -56,9 +91,6 @@ function getInsects (conn = connection) {
 
 function addRecommendation (recommendation, conn = connection) {
   return conn('recommendations')
-    // .join('chemicals', 'recommendations.id', '=', 'chemicals.recommendation_id')
-    // .join('recommendations_weeds', 'recommendations.id', '=', 'recommendations_weeds.recommendation_id')
-    // .join('recommendations_insects', 'recommendations.id', '=', 'recommendations_insects.recommendation_id')
     .insert({
       'date': recommendation.date,
       'grower_name': recommendation.growerName,
@@ -73,27 +105,51 @@ function addRecommendation (recommendation, conn = connection) {
       'livestock': recommendation.livestock,
       'diseases': recommendation.diseases,
       'other_weeds': recommendation.otherWeeds
-      // 'recommendations_weeds': recommendation.weeds.forEach(weed => weed.weedName),
-      // 'insects.name as insectsName',
-      // 'chemicals.name': recommendation.chemicalName,
-      // 'chemicals.dosage': recommendation.chemicalDosage
+    })
+    .then(id => {
+      recommendation.chemicals.forEach(chemical => {
+        return conn('chemicals')
+          .insert({
+            'name': chemical.chemicalName,
+            'dosage': chemical.chemicalDosage,
+            'recommendation_id': id[0]
+          })
+          .then(() => {
+            recommendation.insects.forEach(insect => {
+              return conn('recommendations_insects')
+                .insert({
+                  'insect_id': insect.id,
+                  'recommendation_id': id
+                })
+            })
+          })
+          .then(() => {
+            recommendation.weeds.forEach(weed => {
+              return conn('recommendations_weeds')
+                .insert({
+                  'weed_id': weed.id,
+                  'recommendation_id': id
+                })
+            })
+          })
+      })
     })
 }
 
-function addChemicals (id, chemical, conn = connection) {
-  return conn('chemicals')
-    .insert({
-      'name': chemical.chemicalName,
-      'dosage': chemical.chemicalDosage,
-      'recommendation_id': id
-    })
-}
+// function addChemicals (id, chemical, conn = connection) {
+//   return conn('chemicals')
+//     .insert({
+//       'name': chemical.chemicalName,
+//       'dosage': chemical.chemicalDosage,
+//       'recommendation_id': id
+//     })
+// }
 
 function getRecommendationId (recommendation, conn = connection) {
   return conn('recommendations')
-    .where({})
+    .where({date: recommendation.date, grower_name: recommendation.growerName})
     .select(
-      'id',
+      'id'
     )
 }
 
@@ -132,10 +188,14 @@ module.exports = {
   getRecommendations,
   getWeeds,
   getInsects,
+  getChemicals,
+  getRecWeeds,
+  getRecInsects,
+  addWeed,
   // editRecommendation,
   addRecommendation,
   getRecommendationId,
-  addChemicals,
+  // addChemicals,
   addWeeds,
   addInsects
   // deleteChemical
